@@ -5,11 +5,12 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "test": "playwright test",
-    "test:desktop": "playwright test --project=desktop",
+    "test": "node scripts/run-suite.mjs",
+    "test:pw": "playwright test",
     "test:mobile": "playwright test --project=mobile",
-    "eval": "promptfoo eval -c evals/promptfooconfig.yaml --no-cache",
+    "test:eval": "python -m pytest evals -q",
     "report": "playwright show-report artifacts/report",
+    "typecheck": "tsc --noEmit",
     "ux:walkthrough": "tsx scripts/ux-walkthrough.ts"
   },
   "author": "Arslan Zahid",

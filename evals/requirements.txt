@@ -1,0 +1,6 @@
+# Part 2 — LLM-evaluation check. Kept in its own file so the Playwright suite has
+# zero Python dependencies; install this only to run the eval.
+deepeval>=4.2,<5
+anthropic>=0.40
+pytest>=8
+requests>=2.31
