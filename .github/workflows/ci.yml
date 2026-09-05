@@ -25,11 +25,12 @@ jobs:
           python-version: '3.12'
       - run: pip install -r evals/requirements.txt
 
-      # Browser suite + Part 2 LLM eval. The eval self-skips if the secret is absent,
+      # Browser suite + Part 2 LLM eval. The eval self-skips if the key is absent,
       # so a fork PR without secrets still gets a green browser run.
       - run: npm test
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DEEPEVAL_JUDGE: gemini
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       - if: always()
         uses: actions/upload-artifact@v4

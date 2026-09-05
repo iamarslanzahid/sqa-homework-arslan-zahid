@@ -9,6 +9,12 @@ node_modules/
 .promptfoo/
 promptfoo-output.json
 
+# Python env for the eval
+.venv/
+__pycache__/
+.pytest_cache/
+.deepeval*
+
 # Secrets
 .env
 .env.*

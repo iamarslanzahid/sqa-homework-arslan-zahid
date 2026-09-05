@@ -12,13 +12,12 @@ npx playwright install --with-deps chromium
 
 # 2. Part 2 LLM eval (optional locally; runs in CI)
 pip install -r evals/requirements.txt
-# pick a judge — the framework is free, the judge model is the only cost:
-#   free  : Google Gemini free tier -> https://aistudio.google.com/apikey
-export GOOGLE_API_KEY=...            # DEEPEVAL_JUDGE=gemini is the default
-#   free  : local, no key           -> install Ollama, then:  export DEEPEVAL_JUDGE=ollama
-#   paid  : export DEEPEVAL_JUDGE=anthropic ANTHROPIC_API_KEY=...   (or openai)
+cp .env.example .env      # then add a judge key — framework is free, the judge is the only cost:
+#   free : Google Gemini free tier -> https://aistudio.google.com/apikey   (GOOGLE_API_KEY, default)
+#   free : local Ollama, no key    -> DEEPEVAL_JUDGE=ollama  (needs a running ollama daemon)
+#   paid : DEEPEVAL_JUDGE=anthropic|openai  with the matching key
 
-# 3. run everything (browser tests, then the eval)
+# 3. run everything (browser tests, then the eval). Reads .env automatically.
 npm test
 
 # just the browser tests / just mobile / open the report

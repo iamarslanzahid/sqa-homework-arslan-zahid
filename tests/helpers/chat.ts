@@ -67,6 +67,7 @@ export class AgentChat {
   // --- actions -------------------------------------------------------------
 
   async goto(): Promise<void> {
+    await this.blockThirdPartyNoise();
     await this.suppressCookieBanner();
     await this.page.goto('/', { waitUntil: 'domcontentloaded' });
     await this.dismissCookieBanner();
@@ -85,6 +86,17 @@ export class AgentChat {
    * (2) after load, click Accept All if it is there, then hard-hide the container so a
    * late re-render can never intercept a click. `dismissCookieBanner` never throws.
    */
+  /**
+   * The page pulls in a large pile of analytics / ad / wallet SDKs that have nothing to do
+   * with what we test and are the main cause of a slow `goto`. Block them — the app's own
+   * `/api/**` calls and assets are untouched.
+   */
+  private async blockThirdPartyNoise(): Promise<void> {
+    const blocked =
+      /googletagmanager|google-analytics|analytics\.google|doubleclick|googleadservices|connect\.facebook|facebook\.net|analytics\.tiktok|tiktokw|redditstatic|alb\.reddit|pixel-config\.reddit|outbrain|posthog|walletconnect|web3modal|cookielaw\.org|onetrust\.com|bat\.bing|snap\.licdn|amplitude/i;
+    await this.page.route(blocked, (route) => route.abort());
+  }
+
   private async suppressCookieBanner(): Promise<void> {
     await this.page.context().addCookies([
       {
