@@ -27,7 +27,8 @@ npm run report
 ```
 
 `npm test` runs the 8 Playwright tests, then the DeepEval check. The eval **skips, not
-fails**, when no judge is configured, so step 2 is optional to get a green run.
+fails**, when no judge is configured, so step 2 is optional to get a green run. For CI, add
+`GOOGLE_API_KEY` as a repository secret (Settings → Secrets and variables → Actions).
 
 ## Test strategy (TL;DR)
 

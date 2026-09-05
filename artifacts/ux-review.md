@@ -1,8 +1,8 @@
 # UX review — desktop + mobile
 
 Desktop 1440×900 and mobile via Pixel 5 responsive emulation (Chromium).
-Evidence: [artifacts/ux/](ux/). Automated signup is gated by a reCAPTCHA image
-challenge, so post-signup was checked on a hand-made account.
+Evidence: [artifacts/ux/](ux/). Both signup *and* login are gated by a reCAPTCHA image
+challenge (fire-hydrant / motorcycle grids), so the signed-in walk was done by hand.
 
 ## What works
 
