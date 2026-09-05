@@ -1,11 +1,13 @@
 node_modules/
 
-# Test output — the committed report lives in artifacts/report/, everything else is transient
+# Test output — only the self-contained report HTML is committed; run attachments are transient
 /test-results/
 /playwright-report/
 /blob-report/
 /.playwright/
 /.cache/
+artifacts/report/*
+!artifacts/report/index.html
 .promptfoo/
 promptfoo-output.json
 
