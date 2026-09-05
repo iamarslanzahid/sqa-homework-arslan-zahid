@@ -54,7 +54,7 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
   — a markup change there is a one-line fix, and `data-testid="agent-message"` would drop in.
 - **Framework:** Playwright + TypeScript — fastest path for a live-site suite; built-in HTML
   reporter, no Allure server for 8 tests.
-- **Projects:** Chromium desktop + Pixel 5 (also Chromium — one browser to install). Mobile
+- **Projects:** Chromium desktop + Pixel 7 (also Chromium — one browser to install). Mobile
   re-runs only the viewport test, so the suite stays at 8.
 - **Cookie widget:** a MutationObserver removes the OneTrust nodes on sight — third-party
   furniture that overlays the input and was the only source of flake. 5× clean after.

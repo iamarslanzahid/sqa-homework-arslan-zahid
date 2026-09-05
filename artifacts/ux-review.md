@@ -1,6 +1,6 @@
 # UX review — desktop + mobile
 
-Desktop 1440×900 and mobile via Pixel 5 responsive emulation (Chromium).
+Desktop 1440×900 and mobile via Pixel 7 responsive emulation (Chromium).
 Evidence: [artifacts/ux/](ux/). Both signup *and* login are gated by a reCAPTCHA image
 challenge (fire-hydrant / motorcycle grids), so the signed-in walk was done by hand.
 

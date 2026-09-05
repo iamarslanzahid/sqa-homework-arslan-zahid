@@ -130,7 +130,7 @@ async function main() {
 
   const browser = await chromium.launch();
   await tour(browser, 'desktop', { viewport: { width: 1440, height: 900 } }, inbox);
-  await tour(browser, 'mobile', { ...devices['Pixel 5'] }, inbox);
+  await tour(browser, 'mobile', { ...devices['Pixel 7'] }, inbox);
   await browser.close();
   console.log(`\nscreenshots in ${OUT}`);
 }

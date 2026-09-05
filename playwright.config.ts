@@ -33,11 +33,11 @@ export default defineConfig({
       grepInvert: /mobile:/,
     },
     {
-      // Pixel 5 is Chromium-based: one browser to install, keeps the clean-clone setup fast.
+      // Pixel 7 is Chromium-based: one browser to install, keeps the clean-clone setup fast.
       // The 8 test cases live in the desktop project; mobile runs only the viewport test,
       // so the suite stays at 8 cases, not 16 executions.
       name: 'mobile',
-      use: { ...devices['Pixel 5'] },
+      use: { ...devices['Pixel 7'] },
       grep: /mobile:/,
     },
   ],
