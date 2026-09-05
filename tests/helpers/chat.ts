@@ -67,6 +67,7 @@ export class AgentChat {
   // --- actions -------------------------------------------------------------
 
   async goto(): Promise<void> {
+    await this.suppressCookieBanner();
     await this.page.goto('/', { waitUntil: 'domcontentloaded' });
     await this.dismissCookieBanner();
     await expect(this.input).toBeVisible();
@@ -76,17 +77,52 @@ export class AgentChat {
   }
 
   /**
-   * OneTrust banner overlays the bottom of the viewport (and the input on mobile).
-   * Best-effort: it is not always present and must never fail a test on its own.
+   * The OneTrust consent widget renders a full-width row that sits over the chat input
+   * and eats pointer events until it is dealt with. It is third-party furniture, not
+   * part of what we test, and it is the single most common cause of a flaky click here.
+   *
+   * Two belts: (1) pre-seed the "banner already closed" cookie so it usually never shows,
+   * (2) after load, click Accept All if it is there, then hard-hide the container so a
+   * late re-render can never intercept a click. `dismissCookieBanner` never throws.
    */
+  private async suppressCookieBanner(): Promise<void> {
+    await this.page.context().addCookies([
+      {
+        name: 'OptanonAlertBoxClosed',
+        value: new Date().toISOString(),
+        url: 'https://ask.permission.ai',
+      },
+    ]);
+    // Belt: an observer that deletes the OneTrust nodes the instant they mount, for the
+    // whole life of the page. Removal (not CSS) so nothing can re-raise the overlay.
+    await this.page.addInitScript(() => {
+      const strip = () => {
+        document
+          .querySelectorAll('#onetrust-consent-sdk, .onetrust-pc-dark-filter, .ot-sdk-container')
+          .forEach((el) => el.remove());
+      };
+      strip();
+      new MutationObserver(strip).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+    });
+  }
+
   async dismissCookieBanner(): Promise<void> {
-    const accept = this.page.getByRole('button', { name: /accept all/i });
-    try {
-      await accept.click({ timeout: 4000 });
-      await accept.waitFor({ state: 'hidden', timeout: 4000 });
-    } catch {
-      /* no banner this run */
-    }
+    // Record real consent if the button is briefly there (keeps the app's own consent
+    // state honest), then sweep any leftover nodes the observer may have missed.
+    await this.page
+      .getByRole('button', { name: /accept all/i })
+      .click({ timeout: 1500 })
+      .catch(() => undefined);
+    await this.page
+      .evaluate(() =>
+        document
+          .querySelectorAll('#onetrust-consent-sdk, .onetrust-pc-dark-filter')
+          .forEach((el) => el.remove()),
+      )
+      .catch(() => undefined);
   }
 
   async fetchSuggestions(): Promise<Suggestion[]> {
