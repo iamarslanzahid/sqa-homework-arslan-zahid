@@ -1,0 +1,23 @@
+{
+  "name": "sqa-homework-arslan-zahid",
+  "version": "1.0.0",
+  "description": "QA take-home: automated suite + AI-response validation for the pre-login agent at ask.permission.ai",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "playwright test",
+    "test:desktop": "playwright test --project=desktop",
+    "test:mobile": "playwright test --project=mobile",
+    "eval": "promptfoo eval -c evals/promptfooconfig.yaml --no-cache",
+    "report": "playwright show-report artifacts/report",
+    "ux:walkthrough": "tsx scripts/ux-walkthrough.ts"
+  },
+  "author": "Arslan Zahid",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

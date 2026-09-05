@@ -1,0 +1,25 @@
+node_modules/
+package-lock.json
+
+# Test output — the committed report lives in artifacts/report/, everything else is transient
+/test-results/
+/playwright-report/
+/blob-report/
+/.playwright/
+/.cache/
+.promptfoo/
+promptfoo-output.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Source challenge brief (not part of the deliverable)
+*.docx
