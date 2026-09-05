@@ -39,15 +39,15 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
 - **Skipped on purpose:** exact response text and timing (flaky by design — the trap);
   post-login (brief says automation stays pre-login); Log in happy path (needs real creds);
   visual regression, perf, a11y audit (out of scope for 8 tests).
-- **Why:** the four required behaviours, plus the smallest set that would catch a real
-  regression a user would feel — not eight shallow smoke checks.
+- **Why:** the four required behaviours plus the smallest set that catches a regression a
+  user would feel — not eight shallow smoke checks.
 
 ## Key decisions
 
 - **Waiting:** `/api/agent/ask-unauthenticated` returns the whole answer as one JSON blob and
-  the UI *types it out*. So the wait is: `waitForResponse` on that POST, then poll the new
-  bubble's text length until it is non-zero and stable for two reads. No fixed sleeps, no
-  assertion on wording — only "a new assistant bubble appeared and settled."
+  the UI *types it out*. So: `waitForResponse` on that POST, then poll the new bubble's length
+  until stable for two reads. No sleeps, no assertion on wording — only that a new bubble
+  appeared and settled.
 - **Locators:** `getByTestId` for the six hooks the app already ships; roles/text for nav.
   Messages have **no** test id, so the one structural assumption (assistant = left row with
   `<p>`, user = `whitespace-pre-wrap`) lives in **one** getter pair in `tests/helpers/chat.ts`
@@ -73,8 +73,7 @@ Built with Claude Code under direction; full disclosure in
 
 - Golden-set regression: 15–20 prompts × rubric, tracked over time to catch answer drift.
 - Post-login suite once there is a test account + seedable state.
-- Wire `npm test` into the GitHub Actions gate on PRs to `main` (workflow is in `.github/`).
-- Add axe-core a11y checks to the landing + register pages.
+- Make the CI workflow a required check and add axe-core a11y checks to landing + register.
 - Ask Permission to add `data-testid` to message bubbles and restore the topic pills.
 
 ## Submission checklist
