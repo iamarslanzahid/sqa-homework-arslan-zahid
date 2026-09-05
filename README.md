@@ -85,7 +85,7 @@ Built with Claude Code under direction; full disclosure in
 - [x] Max 8 tests; all 4 required behaviours covered
 - [x] `artifacts/assertions.md` (≤ 300 words)
 - [x] At least one assertion in an LLM-eval framework, running as part of the suite
-- [ ] `artifacts/ux-review.md` (≤ 400 words, desktop + mobile, post-signup, 3–5 prioritised)
+- [x] `artifacts/ux-review.md` (≤ 400 words, desktop + mobile, post-signup, 3–5 prioritised)
 - [x] `artifacts/data-checks.md` (≤ 300 words + SQL)
 - [x] `artifacts/ai-workflow.md` (≤ 300 words, all 4 questions)
 - [x] `artifacts/report/` included

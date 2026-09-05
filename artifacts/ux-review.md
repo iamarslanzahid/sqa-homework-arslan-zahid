@@ -1,42 +1,48 @@
 # UX review — desktop + mobile
 
-Desktop 1440×900 and mobile via Pixel 7 responsive emulation (Chromium).
-Evidence: [artifacts/ux/](ux/). Both signup *and* login are gated by a reCAPTCHA image
-challenge (fire-hydrant / motorcycle grids), so the signed-in walk was done by hand.
+Desktop 1440×900 and mobile via Pixel 7 emulation. Pre-login evidence:
+[artifacts/ux/](ux/). Signup and login are both behind a reCAPTCHA image challenge, so the
+signed-in walk was manual.
 
-## What works
+## Pre-login
 
-Fast first token; clean bubbles; the agent answers off-topic questions gracefully. Log in /
-Sign Up are always visible. Register is short (email + password) with live password-rule
-feedback.
+The agent works well — fast first token, clean bubbles, graceful off-topic. Two problems: the
+OneTrust cookie banner is fixed over the ASK input (on mobile it fully hides the input + send
+button on first load), and the **suggested-topic pills never render pre-login** though the
+suggestions API still returns them — a new visitor gets an empty chat and a greeting that
+changes every reload.
 
-## What's rough
+## Post-signup
 
-- **Cookie notice covers the product.** The OneTrust banner is `position: fixed` at the
-  bottom — exactly where the ASK input is. On mobile first load it hides the input and send
-  button entirely; on desktop it overlaps them and collides with the footer disclaimer text.
-- **No suggested-topic pills pre-login.** The brief and `/api/agent/suggestions-unauthenticated`
-  expect them; the UI shows none. New users get an empty chat, and the greeting text changes
-  every reload — no consistent first impression, no scaffold for what to ask.
-- **Register on mobile:** the cookie notice renders *inside* the form, semi-transparent, over
-  the Password field and Continue button — reads as broken at the trust-sensitive moment.
-- **Wasted space:** the conversation is top-aligned; most of a tall viewport is blank.
+Better: the pills appear, personalised ("Check MY ASK Balance", "Withdraw ASK Tokens"), and a
+real app shell arrives — Wallet with an Earning Activity ledger, Data Enrichment Hub,
+Referrals, Account Settings.
+
+Rough (both):
+
+- **Withdrawal floor as the headline:** a new user sees "you'll need at least 4,900 ASK"
+  against a 100 ASK balance (2%), explained only as "transfer restrictions".
+- **Dead-end CTA:** "Withdraw ASK Tokens" is a suggested topic *and* a wallet button disabled
+  at 100 ASK.
+- **Earning is a chore:** Data Enrichment Hub is a flat ~15-item interest checklist — no
+  grouping, no progress, no stated payout.
+- **Label drift:** "Check MY ASK Balance" casing; pill "Withdraw ASK Tokens" vs button
+  "Withdraw ASK"; "ID Verification: Not Verified" with no hint what it unlocks.
+
+## Worse on mobile
+
+The floating support-chat bubble overlaps content — it covers the "＋" on Add .ASK Domain and
+hides "Twitter Handle" on the profile (it's clear of content on desktop). The **referral card
+is dropped entirely**, not collapsed — the "Get 1000 ASK" share link is desktop-only, missing
+on the form factor people share from.
 
 ## Prioritised improvements
 
-1. **Fix the cookie banner overlap, mobile first.** It hides the chat input on first load, so
-   new mobile users can't use the core feature — likely a real bounce. Render it as a true
-   bottom sheet that never covers the input; fix the button stacking.
-2. **Ship the suggested-topic pills pre-login.** The data exists, the UI doesn't show it.
-   Pills are the fastest path from "landed" to "asked a good question" — the activation
-   event. Render the 6 enabled suggestions as chips above the input and pin the greeting.
-3. **De-risk signup.** reCAPTCHA image grid *and* mandatory email verification is two
-   hurdles before any value; each drops conversion. Move to invisible reCAPTCHA and let
-   users try the agent first, verifying email only on a rewarded action.
-4. **Use the empty space.** Most of the viewport is blank — prime room for the pills and a
-   one-line "what is this" for cold arrivals. Center the column, fill the top.
-
-## Pre-login vs post-signup / form-factor
-
-_(to complete on the manual account: desktop vs mobile, and what the signed-in agent /
-wallet / earning UI adds over pre-login.)_
+1. **Cookie banner off the input, mobile first.** It blocks the core action for new mobile
+   users — a likely bounce. A bottom sheet that never covers the input.
+2. **Ship the pills pre-login.** The data exists; pills are the shortest path from landing to
+   a good first question — the activation moment. Pin the greeting.
+3. **Reframe the withdrawal floor** as reachable milestones with per-action payouts, not a 2%
+   bar to a 4,900 wall — a day-one retention lever.
+4. **Restore mobile referrals and fix the chat-bubble overlap** — a growth channel and real
+   click targets lost for near-zero effort.
