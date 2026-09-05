@@ -1,14 +1,13 @@
 # Validating a non-deterministic answer
 
-Topic: **"What is Permission?"** (the first suggested pill's prompt). The answer streams and
-differs every run, so nothing asserts on exact text or timing.
+Topic: **"What is Permission?"**. The answer differs every run, so nothing asserts on exact
+text or timing.
 
 ## Waiting
 
 `/api/agent/ask-unauthenticated` returns the whole answer as one JSON blob; the UI then types
-it out. So `waitForStreamedReply` ([tests/helpers/chat.ts](../tests/helpers/chat.ts)) waits
-for that POST response, then polls the new bubble's length until it is non-zero and unchanged
-for two reads. No fixed sleeps.
+it out. So `waitForStreamedReply` waits for that POST response, then polls the new bubble's
+length until it is non-zero and unchanged for two reads. No fixed sleeps.
 
 ## What I assert
 
@@ -25,9 +24,9 @@ applied to both the API text and the rendered bubble
 
 ## What I deliberately do NOT assert
 
-Exact wording; sentence count; whether it ends with a follow-up question; concept order;
-specific numbers (ASK price, % rewards) — the model should not commit to those, and pinning
-them would be flaky *and* wrong. Latency — a third-party model's behaviour, not our SLA.
+Exact wording; sentence count; a trailing follow-up question; concept order; specific numbers
+(ASK price, % rewards) — the model should not commit to those and pinning them would be flaky
+*and* wrong. Latency — a third-party model's behaviour, not our SLA.
 
 ## LLM-eval wiring — DeepEval G-Eval
 
