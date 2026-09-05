@@ -12,7 +12,8 @@ import { chromium, devices, type Browser, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-const OUT = path.join('artifacts', 'report', 'ux');
+// Sibling of artifacts/report/ — the Playwright HTML reporter wipes its own outputFolder.
+const OUT = path.join('artifacts', 'ux');
 const MAILTM = 'https://api.mail.tm';
 
 type Inbox = { address: string; password: string; token: string };

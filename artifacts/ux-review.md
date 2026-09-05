@@ -1,7 +1,7 @@
 # UX review — desktop + mobile
 
 Desktop 1440×900 and mobile via Pixel 5 responsive emulation (Chromium).
-Evidence: [artifacts/report/ux/](report/ux/). Automated signup is gated by a reCAPTCHA image
+Evidence: [artifacts/ux/](ux/). Automated signup is gated by a reCAPTCHA image
 challenge, so post-signup was checked on a hand-made account.
 
 ## What works
@@ -12,9 +12,9 @@ feedback.
 
 ## What's rough
 
-- **Cookie notice covers the product.** On mobile first load the OneTrust banner hides the
-  entire ASK input and send button. On desktop it overlaps them, and the Accept / Reject
-  buttons render on top of each other and the disclaimer text — a layout bug on both.
+- **Cookie notice covers the product.** The OneTrust banner is `position: fixed` at the
+  bottom — exactly where the ASK input is. On mobile first load it hides the input and send
+  button entirely; on desktop it overlaps them and collides with the footer disclaimer text.
 - **No suggested-topic pills pre-login.** The brief and `/api/agent/suggestions-unauthenticated`
   expect them; the UI shows none. New users get an empty chat, and the greeting text changes
   every reload — no consistent first impression, no scaffold for what to ask.
