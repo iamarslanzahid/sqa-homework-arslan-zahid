@@ -1,6 +1,11 @@
-# Part 2 — LLM-evaluation check. Kept in its own file so the Playwright suite has
-# zero Python dependencies; install this only to run the eval.
+# Part 2 — LLM-evaluation check. Kept separate so the Playwright suite has zero Python
+# deps; install this only to run the eval.
 deepeval>=4.2,<5
-anthropic>=0.40
 pytest>=8
 requests>=2.31
+
+# Judge SDKs. google-genai is the default (free Gemini tier); the others are here so
+# DEEPEVAL_JUDGE=anthropic|openai work without a second install. Ollama needs no SDK.
+google-genai>=1.0
+anthropic>=0.40
+openai>=1.40

@@ -17,11 +17,12 @@ import pytest
 import requests
 from deepeval import assert_test
 from deepeval.metrics import GEval
-from deepeval.models import AnthropicModel
-from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+from deepeval.test_case import LLMTestCase
+from deepeval.test_case import SingleTurnParams as TestCaseParams
+
+from judge import build_judge
 
 BASE_URL = os.environ.get("PERMISSION_BASE_URL", "https://ask.permission.ai")
-JUDGE_MODEL = os.environ.get("DEEPEVAL_JUDGE_MODEL", "claude-haiku-4-5-20251001")
 ASK_ENDPOINT = f"{BASE_URL}/api/agent/ask-unauthenticated"
 
 QUESTION = "What is Permission?"
@@ -41,8 +42,8 @@ def permission_answer() -> str:
 def test_what_is_permission_answer_is_correct_and_grounded(permission_answer: str) -> None:
     correctness = GEval(
         name="Correct, grounded explanation of Permission",
-        model=AnthropicModel(model=JUDGE_MODEL),
-        evaluation_params=[LLMTestCaseParams.INPUT, LLMTestCaseParams.ACTUAL_OUTPUT],
+        model=build_judge(),
+        evaluation_params=[TestCaseParams.INPUT, TestCaseParams.ACTUAL_OUTPUT],
         evaluation_steps=[
             "Check that the output explains Permission.ai as a service where people share "
             "their data on their own terms and earn rewards (ASK tokens), usually through a "

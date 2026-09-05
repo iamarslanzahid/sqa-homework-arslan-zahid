@@ -83,23 +83,25 @@ async function tour(browser: Browser, label: string, contextOpts: object, inbox:
   await shoot(page, `${label}-03-register-filled`);
   await page.getByRole('button', { name: /continue|sign up|create/i }).click();
 
+  await page.waitForTimeout(4000);
+  await shoot(page, `${label}-04-post-submit`);
   const challenged = await page
-    .frameLocator('iframe[title*="challenge" i], iframe[src*="recaptcha"][src*="bframe"]')
-    .locator('body')
-    .isVisible({ timeout: 6000 })
+    .locator('iframe[src*="recaptcha"][src*="bframe"], iframe[title*="recaptcha" i]')
+    .last()
+    .isVisible()
     .catch(() => false);
   if (challenged) {
-    console.log(`\n[${label}] reCAPTCHA challenge shown — automated signup stops here.`);
-    console.log('  Sign up by hand, then re-run with post-login screenshots, or note it in ux-review.md.\n');
-    await shoot(page, `${label}-04-recaptcha`);
+    console.log(
+      `\n[${label}] reCAPTCHA image challenge — automated signup stops here (as expected).\n` +
+        '  Sign up by hand and pass creds/screenshots for the post-login part of ux-review.md.\n',
+    );
     await context.close();
     return;
   }
 
   const link = await waitForVerifyLink(inbox);
   if (!link) {
-    console.log(`\n[${label}] no verification email arrived in 90s — stopping.\n`);
-    await shoot(page, `${label}-04-post-submit`);
+    console.log(`\n[${label}] no verification email in 90s — stopping.\n`);
     await context.close();
     return;
   }

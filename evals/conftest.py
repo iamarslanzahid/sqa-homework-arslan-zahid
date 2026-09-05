@@ -1,13 +1,14 @@
-import os
-
 import pytest
+
+from judge import is_configured
 
 
 def pytest_collection_modifyitems(config, items):
-    """The eval calls a hosted judge model. With no key, skip rather than fail so a
-    keyless clone still gets a green run and a clear reason."""
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    """The eval calls an LLM judge. If none is configured, skip (don't fail) so a fresh
+    clone still gets a green run with a clear reason."""
+    ok, detail = is_configured()
+    if ok:
         return
-    skip = pytest.mark.skip(reason="ANTHROPIC_API_KEY not set — see README 'Part 2 eval'")
+    skip = pytest.mark.skip(reason=f"no LLM judge configured — {detail}. See README 'Part 2 eval'.")
     for item in items:
         item.add_marker(skip)
