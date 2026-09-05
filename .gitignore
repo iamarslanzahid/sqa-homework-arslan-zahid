@@ -1,5 +1,4 @@
 node_modules/
-package-lock.json
 
 # Test output — the committed report lives in artifacts/report/, everything else is transient
 /test-results/
