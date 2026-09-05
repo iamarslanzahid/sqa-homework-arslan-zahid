@@ -7,7 +7,7 @@ the only thing that can cost money, so this stays swappable:
 - gemini    → GOOGLE_API_KEY, free tier at https://aistudio.google.com/apikey
 - anthropic → ANTHROPIC_API_KEY
 - openai    → OPENAI_API_KEY
-- ollama    → no key, fully local/offline (needs a running Ollama + OLLAMA_MODEL, default llama3.1)
+- ollama    → no key; needs a running Ollama daemon + `pip install ollama` (in requirements)
 
 `is_configured()` tells the runner whether a judge is actually usable, so the suite can
 skip the eval cleanly rather than fail when nothing is set up.

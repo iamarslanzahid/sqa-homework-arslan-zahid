@@ -18,7 +18,7 @@ import requests
 from deepeval import assert_test
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase
-from deepeval.test_case import SingleTurnParams as TestCaseParams
+from deepeval.test_case import SingleTurnParams as Params
 
 from judge import build_judge
 
@@ -43,7 +43,7 @@ def test_what_is_permission_answer_is_correct_and_grounded(permission_answer: st
     correctness = GEval(
         name="Correct, grounded explanation of Permission",
         model=build_judge(),
-        evaluation_params=[TestCaseParams.INPUT, TestCaseParams.ACTUAL_OUTPUT],
+        evaluation_params=[Params.INPUT, Params.ACTUAL_OUTPUT],
         evaluation_steps=[
             "Check that the output explains Permission.ai as a service where people share "
             "their data on their own terms and earn rewards (ASK tokens), usually through a "
