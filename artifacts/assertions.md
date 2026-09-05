@@ -31,12 +31,11 @@ Exact wording; sentence count; a trailing follow-up question; concept order; spe
 ## LLM-eval wiring — DeepEval G-Eval
 
 [evals/test_permission_answer_eval.py](../evals/test_permission_answer_eval.py) runs inside
-`npm test` and skips cleanly when no judge is configured. One G-Eval metric grades a live
-answer on: correct explanation of Permission **and no invented specifics** (token price,
-guaranteed earnings, capabilities it lacks), threshold 0.7. The judge is swappable
-(`DEEPEVAL_JUDGE`) — default is Google Gemini's free tier; local Ollama also works with no key.
+`npm test`, skipping cleanly with no judge. One G-Eval metric grades a live answer on: correct
+explanation of Permission **and no invented specifics** (token price, guaranteed earnings,
+capabilities it lacks), threshold 0.7. Judge is swappable (`DEEPEVAL_JUDGE`) — default is
+Gemini's free tier, local Ollama also works.
 
 Chosen over Promptfoo: pytest-native, and Promptfoo's native SQLite dep would not build here.
 It catches what string checks cannot — a fluent, keyword-rich answer that is confidently
-**wrong** ("Permission pays $500/month guaranteed" passes every assertion above, fails the
-rubric).
+**wrong** ("Permission pays $500/month guaranteed" passes every check above, fails the rubric).
