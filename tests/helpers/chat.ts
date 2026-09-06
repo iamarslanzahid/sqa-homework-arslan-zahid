@@ -193,7 +193,7 @@ export class AgentChat {
   waitForAskResponse(): Promise<Response> {
     return this.page.waitForResponse(
       (r) => r.url().includes(ASK_ENDPOINT) && r.request().method() === 'POST' && r.status() === 200,
-      { timeout: 45_000 },
+      { timeout: 60_000 },
     );
   }
 
@@ -203,7 +203,7 @@ export class AgentChat {
    * for two consecutive reads. No fixed sleeps, no assertion on the text itself.
    */
   async waitForStreamedReply(previousCount: number): Promise<string> {
-    await expect(this.assistantMessages).toHaveCount(previousCount + 1, { timeout: 30_000 });
+    await expect(this.assistantMessages).toHaveCount(previousCount + 1, { timeout: 45_000 });
 
     const content = this.assistantMessages.nth(previousCount).locator('.text-md').first();
     let last = -1;
@@ -216,7 +216,7 @@ export class AgentChat {
           last = len;
           return stableReads;
         },
-        { timeout: 30_000, intervals: [400] },
+        { timeout: 45_000, intervals: [400] },
       )
       .toBeGreaterThanOrEqual(2);
 

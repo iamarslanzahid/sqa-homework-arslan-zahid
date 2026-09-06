@@ -30,12 +30,14 @@ npm run report
 fails**, when no judge is configured, so step 2 is optional to get a green run. For CI, add
 `GOOGLE_API_KEY` as a repository secret (Settings → Secrets and variables → Actions).
 
+The target is a live third-party site — a slow link or brief outage can time a test out.
+2 retries + generous timeouts absorb that; if a run fails, re-run it.
+
 ## Test strategy (TL;DR)
 
 - **Covered:** page + agent ready; suggested-topic reply; free-text reply; Shift+Enter
-  newline; send-button enable/disable; empty-input safety; the "What is Permission?" answer
-  held to quality rules (Part 2); auth navigation; mobile viewport (no overflow, input usable,
-  agent answers).
+  newline; send-button enable/disable; the "What is Permission?" answer held to quality rules
+  (Part 2); auth navigation; mobile viewport (no overflow, input usable, agent answers).
 - **Skipped on purpose:** exact response text and timing (flaky by design — the trap);
   post-login (automation stays pre-login); Log in happy path (needs real creds); visual
   regression, perf, a11y (out of scope for 8 tests).
@@ -46,8 +48,8 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
 
 - **Waiting:** `/api/agent/ask-unauthenticated` returns the whole answer as one JSON blob and
   the UI *types it out*. So: `waitForResponse` on that POST, then poll the new bubble's length
-  until stable for two reads. No sleeps, no assertion on wording — only that a new bubble
-  appeared and settled.
+  until stable for two reads. No sleeps, no assertion on wording — only that a bubble appeared
+  and settled.
 - **Locators:** `getByTestId` for the six hooks the app already ships; roles/text for nav.
   Messages have **no** test id, so the one structural assumption (assistant = left row with
   `<p>`, user = `whitespace-pre-wrap`) lives in **one** getter pair in `tests/helpers/chat.ts`
@@ -56,13 +58,13 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
 - **Projects:** Chromium desktop + Pixel 7 (also Chromium — one browser to install). Mobile
   re-runs only the viewport test, so the suite stays at 8.
 - **Cookie widget:** a MutationObserver removes the OneTrust nodes on sight — third-party
-  furniture that overlays the input and was the only source of flake. 5× clean after.
+  furniture that overlays the input and was the only source of flake.
 - **Eval:** DeepEval (pytest-native; Promptfoo's native SQLite dep would not build here), one
   G-Eval rubric, swappable + free-by-default judge.
-- **Missing pills (product gap, not a locator problem):** pre-login fetches the 6 topics and
+- **Missing pills (product gap, not a locator bug):** pre-login fetches the 6 topics and
   renders none (they render signed-in). Test 1 asserts the API contract, asserts the pills
-  *if* they render, and otherwise records a `KNOWN GAP` annotation visible in the report — so
-  it goes green today and starts asserting the pills the day Permission ships them.
+  *if* they render, else records a `KNOWN GAP` annotation in the report — green today, and it
+  starts asserting the pills the day Permission ships them.
 
 ## AI disclosure
 

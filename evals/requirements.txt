@@ -2,6 +2,7 @@
 # deps; install this only to run the eval.
 deepeval>=4.2,<5
 pytest>=8
+pytest-rerunfailures>=14   # retry a transient judge-API hiccup (pytest.ini)
 requests>=2.31
 
 # Judge SDKs. google-genai is the default (free Gemini tier); the others are here so

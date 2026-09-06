@@ -1,14 +1,14 @@
 """
 Part 2 — one assertion wired into an LLM-evaluation framework (DeepEval).
 
-Plain assertions (tests/helpers/assertions.ts) prove the answer is on topic, the right
-length, and not an error. They cannot tell whether a fluent, keyword-rich answer is
-actually *correct* — an answer that says "Permission.ai pays you $500 a month guaranteed"
-would pass every string check and still be wrong.
+The plain assertions (tests/helpers/assertions.ts) prove the answer is on topic, the right
+length, and not an error. They cannot tell whether a fluent, keyword-rich answer is actually
+*correct* — "Permission.ai pays you $500 a month guaranteed" passes every string check and is
+still wrong.
 
-This adds a G-Eval check judged by Claude: is the answer a correct, grounded explanation
-of Permission, with no invented specifics? It runs against a live answer from the same
-endpoint the UI uses.
+This adds a G-Eval check: is the answer a correct, grounded explanation of Permission with no
+invented specifics? It runs against a live answer from the same endpoint the UI uses. Judge
+picked by evals/judge.py (default: free Gemini tier).
 """
 
 import os
@@ -24,8 +24,11 @@ from judge import build_judge
 
 BASE_URL = os.environ.get("PERMISSION_BASE_URL", "https://ask.permission.ai")
 ASK_ENDPOINT = f"{BASE_URL}/api/agent/ask-unauthenticated"
-
 QUESTION = "What is Permission?"
+
+# Substrings that mean the *judge* API failed, not that the answer was bad — don't let a
+# transient 5xx / rate-limit on the judge fail the suite.
+_JUDGE_INFRA_ERRORS = ("500", "502", "503", "504", "overloaded", "rate limit", "timeout", "unavailable")
 
 
 def ask_agent(message: str) -> str:
@@ -58,7 +61,15 @@ def test_what_is_permission_answer_is_correct_and_grounded(permission_answer: st
         threshold=0.7,
     )
 
-    assert_test(
-        LLMTestCase(input=QUESTION, actual_output=permission_answer),
-        [correctness],
-    )
+    try:
+        assert_test(
+            LLMTestCase(input=QUESTION, actual_output=permission_answer),
+            [correctness],
+        )
+    except AssertionError:
+        raise  # a real rubric failure — the answer is bad
+    except Exception as err:  # noqa: BLE001 — deepeval wraps provider errors in many types
+        text = str(err).lower()
+        if any(sig in text for sig in _JUDGE_INFRA_ERRORS):
+            pytest.xfail(f"judge API unavailable, not an answer-quality failure: {err}")
+        raise

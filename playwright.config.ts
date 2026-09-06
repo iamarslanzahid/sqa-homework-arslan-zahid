@@ -2,18 +2,20 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Target: the public, pre-login agent at ask.permission.ai.
- * We test one real, third-party environment — no local server — so config leans on
- * generous per-action time, a single retry to absorb network blips (not to paper over
- * a weak wait), and traces/screenshots kept only when something actually fails.
+ * We test one real, third-party environment — no local server — so the timeouts are
+ * generous (a live model reply can take 30s+ on a slow link) and there are 2 retries to
+ * absorb network blips against a site we don't control — not to paper over a weak wait.
+ * Traces/screenshots are kept only when something actually fails.
  */
 export default defineConfig({
   testDir: './tests',
+  globalSetup: './tests/global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: 1,
+  retries: 2,
   workers: process.env.CI ? 2 : 3,
-  timeout: 60_000,
-  expect: { timeout: 15_000 },
+  timeout: 120_000,
+  expect: { timeout: 20_000 },
   reporter: [
     ['list'],
     ['html', { outputFolder: 'artifacts/report', open: 'never' }],
@@ -23,8 +25,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 15_000,
-    navigationTimeout: 45_000,
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
   },
   projects: [
     {
