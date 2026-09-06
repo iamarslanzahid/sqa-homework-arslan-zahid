@@ -3,10 +3,11 @@
  *
  * These run against the "What is Permission?" topic. The design goal: pass on every
  * reasonable phrasing of a correct answer, fail on a broken, off-topic, truncated, or
- * error answer. Shared by the Playwright spec and the Promptfoo eval so both judge the
- * response by the same rules.
+ * error answer — without ever asserting the exact wording, which changes every run.
  *
- * See artifacts/assertions.md for what is deliberately NOT checked here and why.
+ * See artifacts/assertions.md for what is deliberately NOT checked here and why; the
+ * DeepEval rubric in evals/ adds the one thing these string checks can't catch — an
+ * answer that is fluent and on-topic but factually wrong.
  */
 
 export type AnswerCheck = {
