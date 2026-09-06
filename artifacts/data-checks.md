@@ -1,12 +1,12 @@
 # Data-layer reasoning
 
 No DB access. Inferred from what the client exposes: `POST /api/agent/ask-unauthenticated`
-returns `{ message, session_id }` (fresh UUID per anonymous conversation);
-`GET /api/agent/suggestions-unauthenticated` returns rows with `id, title, prompt,
-for_authenticated, order, enabled, created_at, updated_at` — effectively a table dump.
-Post-signup: a **100 ASK signup grant** lands as *pending*, the wallet shows a 4,900-ASK
-withdrawal floor and an "Earning Activity" ledger, referrals pay "1000 ASK on verified
-signup", and the profile stores email (verified flag), phone, country, DOB, gender.
+returns `{ message, session_id }` (fresh UUID per anonymous conversation), and
+`GET /api/agent/suggestions-unauthenticated` returns `id, title, prompt, for_authenticated,
+order, enabled, created_at, updated_at` — effectively a table dump. Post-signup: a **100 ASK
+signup grant** lands *pending*, the wallet shows a 4,900-ASK withdrawal floor plus an
+"Earning Activity" ledger, referrals pay 1000 ASK on verified signup, and the profile stores
+email (verified flag), phone, country, DOB, gender.
 
 ## Expected writes
 
@@ -14,8 +14,8 @@ signup", and the profile stores email (verified flag), phone, country, DOB, gend
 
 | table | key columns |
 |---|---|
-| `agent_session` | `id` (uuid), `user_id` (nullable — null pre-login), `created_at`, `client_ip_hash`, `user_agent` |
-| `agent_message` | `id`, `session_id` FK, `role` ('user'\|'assistant'), `content`, `created_at`, `model`, `completion_tokens`, `latency_ms`, `suggestion_id` (nullable, set when the turn came from a pill) |
+| `agent_session` | `id` (uuid), `user_id` (null pre-login), `created_at`, `client_ip_hash`, `user_agent` |
+| `agent_message` | `id`, `session_id` FK, `role`, `content`, `created_at`, `model`, `completion_tokens`, `latency_ms`, `suggestion_id` (set when the turn came from a pill) |
 | `agent_suggestion` | the rows already visible via the API |
 | `analytics_event` | `ai_agent_request` — `session_id`, `distinct_id`, `ts` (GA + PostHog) |
 
@@ -23,14 +23,14 @@ signup", and the profile stores email (verified flag), phone, country, DOB, gend
 
 | table | key columns |
 |---|---|
-| `user` | `id`, `email` (unique, lower), `password_hash`, `status`, `created_at`, `email_verified_at`, `phone`, `country`, `dob`, `id_verification_status` |
+| `user` | `id`, `email` (unique), `password_hash`, `status`, `created_at`, `email_verified_at`, `phone`, `country`, `dob`, `id_verification_status` |
 | `email_verification_token` | `token_hash`, `user_id`, `expires_at`, `consumed_at` |
 | `wallet` | `id`, `user_id` (unique), `settled_ask`, `pending_ask`, `created_at` |
-| `ask_transaction` | `id`, `user_id`, `type` ('signup_grant'\|'referral'\|'enrichment_task'\|'withdrawal'), `amount`, `status` ('pending'\|'settled'), `created_at` |
-| `referral` | `referrer_id`, `referred_user_id`, `reward_amount`, `status` (paid once referred user is verified) |
+| `ask_transaction` | `id`, `user_id`, `type` ('signup_grant'\|'referral'\|'enrichment_task'\|'withdrawal'), `amount`, `status`, `created_at` |
+| `referral` | `referrer_id`, `referred_user_id`, `reward_amount`, `status` |
 
-Pre-login `agent_session` rows should be claimed (`user_id` back-filled) when the same client
-signs in, so a new user keeps their first conversation.
+Pre-login `agent_session` rows should be claimed (`user_id` back-filled) on sign-in, so a new
+user keeps their first conversation.
 
 ## Verification queries
 
@@ -71,8 +71,8 @@ HAVING COUNT(w.id) <> 1
 
 ## Downstream pipeline integrity check
 
-The analytics warehouse ingests `agent_message`. Add a not-null / range assertion on load:
-reject the batch if `completion_tokens = 0` on an `assistant` row with non-empty `content`,
-or if `created_at` is in the future or precedes its `agent_session.created_at` — that pattern
-means a broken producer or clock skew, and it would silently corrupt any "messages per
-session" or cost-per-conversation metric built on top.
+The warehouse ingests `agent_message`. Assert on load: reject the batch if
+`completion_tokens = 0` on an `assistant` row with non-empty `content`, or if `created_at` is
+in the future or precedes its session's `created_at`. That pattern means a broken producer or
+clock skew, and it would silently corrupt any messages-per-session or cost-per-conversation
+metric built on top.

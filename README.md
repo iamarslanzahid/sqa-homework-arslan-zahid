@@ -37,8 +37,8 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
   held to quality rules (Part 2); auth navigation; mobile viewport (no overflow, input usable,
   agent answers).
 - **Skipped on purpose:** exact response text and timing (flaky by design — the trap);
-  post-login (brief says automation stays pre-login); Log in happy path (needs real creds);
-  visual regression, perf, a11y audit (out of scope for 8 tests).
+  post-login (automation stays pre-login); Log in happy path (needs real creds); visual
+  regression, perf, a11y (out of scope for 8 tests).
 - **Why:** the four required behaviours plus the smallest set that catches a regression a
   user would feel — not eight shallow smoke checks.
 
@@ -52,17 +52,17 @@ fails**, when no judge is configured, so step 2 is optional to get a green run. 
   Messages have **no** test id, so the one structural assumption (assistant = left row with
   `<p>`, user = `whitespace-pre-wrap`) lives in **one** getter pair in `tests/helpers/chat.ts`
   — a markup change there is a one-line fix, and `data-testid="agent-message"` would drop in.
-- **Framework:** Playwright + TypeScript — fastest path for a live-site suite; built-in HTML
-  reporter, no Allure server for 8 tests.
+- **Framework:** Playwright + TypeScript; built-in HTML reporter, no Allure server for 8 tests.
 - **Projects:** Chromium desktop + Pixel 7 (also Chromium — one browser to install). Mobile
   re-runs only the viewport test, so the suite stays at 8.
 - **Cookie widget:** a MutationObserver removes the OneTrust nodes on sight — third-party
   furniture that overlays the input and was the only source of flake. 5× clean after.
 - **Eval:** DeepEval (pytest-native; Promptfoo's native SQLite dep would not build here), one
   G-Eval rubric, swappable + free-by-default judge.
-- **Missing pills:** the brief's suggested-topic pills do not render pre-login now (API still
-  returns them). Test 1 asserts the suggestions API contract, not a brittle pill locator;
-  `artifacts/ux-review.md` files it as a finding.
+- **Missing pills (product gap, not a locator problem):** pre-login fetches the 6 topics and
+  renders none (they render signed-in). Test 1 asserts the API contract, asserts the pills
+  *if* they render, and otherwise records a `KNOWN GAP` annotation visible in the report — so
+  it goes green today and starts asserting the pills the day Permission ships them.
 
 ## AI disclosure
 

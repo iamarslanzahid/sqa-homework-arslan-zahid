@@ -78,15 +78,6 @@ export class AgentChat {
   }
 
   /**
-   * The OneTrust consent widget renders a full-width row that sits over the chat input
-   * and eats pointer events until it is dealt with. It is third-party furniture, not
-   * part of what we test, and it is the single most common cause of a flaky click here.
-   *
-   * Two belts: (1) pre-seed the "banner already closed" cookie so it usually never shows,
-   * (2) after load, click Accept All if it is there, then hard-hide the container so a
-   * late re-render can never intercept a click. `dismissCookieBanner` never throws.
-   */
-  /**
    * The page pulls in a large pile of analytics / ad / wallet SDKs that have nothing to do
    * with what we test and are the main cause of a slow `goto`. Block them — the app's own
    * `/api/**` calls and assets are untouched.
@@ -97,6 +88,12 @@ export class AgentChat {
     await this.page.route(blocked, (route) => route.abort());
   }
 
+  /**
+   * The OneTrust consent widget renders a full-width row that sits over the chat input and
+   * eats pointer events until it is dealt with — third-party furniture, not what we test,
+   * and the single most common cause of a flaky click here. Two belts: pre-seed the
+   * "banner already closed" cookie, and run an observer that deletes the nodes on sight.
+   */
   private async suppressCookieBanner(): Promise<void> {
     await this.page.context().addCookies([
       {
@@ -144,6 +141,18 @@ export class AgentChat {
   }
 
   /**
+   * The suggested-topic pills, located by the titles the API actually returned rather
+   * than a hard-coded string or a CSS class — so it survives Permission editing the
+   * topic list or restyling the chips. Signed-in they render as buttons under a
+   * "Suggested topics:" heading; pre-login they currently do not render at all.
+   */
+  async suggestionPills(topics?: Suggestion[]): Promise<Locator> {
+    const list = topics ?? (await this.fetchSuggestions());
+    const titles = list.map((s) => s.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    return this.page.getByRole('button', { name: new RegExp(`^\\s*(${titles})\\s*$`, 'i') });
+  }
+
+  /**
    * Send a question the way a user would: type into the box, press the send button.
    * Returns the parsed `/ask-unauthenticated` response so a caller can reuse the
    * server's own answer text instead of re-scraping it from the DOM.
@@ -168,7 +177,7 @@ export class AgentChat {
    * keeps working through the current state where pills are not shown pre-login.
    */
   async askSuggestedTopic(topic: Suggestion): Promise<{ message: string; session_id: string }> {
-    const pill = this.page.getByRole('button', { name: topic.title, exact: false });
+    const pill = await this.suggestionPills([topic]);
     if (await pill.count()) {
       const before = await this.assistantMessages.count();
       const [response] = await Promise.all([
